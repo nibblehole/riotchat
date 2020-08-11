@@ -14,7 +14,7 @@ dev-setup: 3rdparty/riot
 	npm i
 
 3rdparty/riot: 3rdparty/riot-web
-	(cd 3rdparty/riot-web && npm i && npm i @nextcloud/browserslist-config && npm run build && cp config.sample.json webapp/ && cp element.io/develop/config.json webapp/develop.config.json && mv webapp ../riot && npm remove @nextcloud/browserslist-config)
+	(rm -rf 3rdparty/riot && cd 3rdparty/riot-web && git reset HEAD . && git reset --hard && git clean -f && git apply ../nonce.patch && rm -rf node_modules && npm i && ../usercontentnonce.sh && npm run build && cp config.sample.json webapp/ && cp element.io/develop/config.json webapp/develop.config.json && mv webapp ../riot && git reset HEAD . && git reset --hard && git clean -f)
 
 .PHONY: build
 build:

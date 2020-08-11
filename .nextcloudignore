@@ -1,4 +1,5 @@
 /3rdparty/riot-web/
+/3rdparty/nonce.patch
 /src/
 /webpack.config.js
 /babel.config.js

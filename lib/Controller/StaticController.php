@@ -108,9 +108,15 @@ class StaticController extends Controller {
 	 * @return FileResponse|NotFoundResponse
 	 */
 	private function createFileResponse($path) {
+		// Maybe need to send an index.html file
+		if (substr($path, -1) === "/") {
+			return $this->createFileResponse($path . "index.html");
+		}
+
 		if (!file_exists($path)) {
 			return new NotFoundResponse();
 		}
+
 		$content = file_get_contents($path);
 		return $this->createFileResponseWithContent($path, $content);
 	}
@@ -157,6 +163,16 @@ class StaticController extends Controller {
 		$csp->addAllowedImageDomain('*');
 		$csp->addAllowedMediaDomain('*');
 		$csp->addAllowedObjectDomain('*');
+		$csp->addAllowedConnectDomain('blob: ');
+		$csp->addAllowedImageDomain('blob: ');
+		$csp->addAllowedMediaDomain('blob: ');
+		$csp->addAllowedObjectDomain('blob: ');
+		$csp->addAllowedFrameDomain('blob: ');
+		$csp->addAllowedConnectDomain('data: ');
+		$csp->addAllowedImageDomain('data: ');
+		$csp->addAllowedMediaDomain('data: ');
+		$csp->addAllowedObjectDomain('data: ');
+		$csp->addAllowedFrameDomain('data: ');
 
 		// Needs to include current domain and the Jitsi instance being used
 		$csp->addAllowedFrameDomain('*');
@@ -173,6 +189,7 @@ class StaticController extends Controller {
 	}
 
 	private function addScriptNonce(string $content, string $nonce): string {
-		return str_replace('<script', "<script nonce=\"$nonce\"", $content);
+		$tr = str_replace('<script', "<script nonce=\"$nonce\"", $content);
+		return str_replace('<head>', "<head><meta name=\"nextcloudnonce\" content=\"$nonce\">", $tr);
 	}
 }
